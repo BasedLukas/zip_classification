@@ -4,7 +4,7 @@ This project is a simplified implementation of the gzip compression algorithm. T
 
 Run `main.py` in order to test the algorithm and view the output at various stages of compression.
 
-The `gzip_classification.py` file makes use of gzip as a text classifier. I explain how this is possible in the blog post. It is based on a paper entitled "Less is More: Parameter-Free Text Classification with Gzip".
+The `gzip_classification.py` file makes use of gzip as a text classifier. I explain how this is possible in the blog post. It is based on a paper entitled ["Less is More: Parameter-Free Text Classification with Gzip"](https://arxiv.org/abs/2212.09410).
 
 
 
