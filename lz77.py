@@ -11,6 +11,23 @@ class LZ77Compressor:
         self.window_size = window_size
         self.lookahead_buffer_size = lookahead_buffer_size
 
+    # def compress(self, input):
+
+    #     data = input
+    #     i = 0
+    #     output = []
+
+    #     while i < len(data):
+    #         match = self.findLongestMatch(data, i)
+    #         if match:
+    #             (bestMatchDistance, bestMatchLength) = match
+    #             output.append((bestMatchDistance, bestMatchLength, data[i + bestMatchLength]))
+    #             i += bestMatchLength + 1
+    #         else:
+    #             output.append((0,0,data[i]))
+    #             i += 1
+    #     return output
+
     def compress(self, input):
 
         data = input
@@ -21,12 +38,18 @@ class LZ77Compressor:
             match = self.findLongestMatch(data, i)
             if match:
                 (bestMatchDistance, bestMatchLength) = match
-                output.append((bestMatchDistance, bestMatchLength, data[i + bestMatchLength]))
+                if i + bestMatchLength < len(data):
+                    output.append((bestMatchDistance, bestMatchLength, data[i + bestMatchLength]))
+                else:
+                    output.append((bestMatchDistance, bestMatchLength, data[-1]))
                 i += bestMatchLength + 1
             else:
-                output.append((0,0,data[i]))
+                output.append((0, 0, data[i]))
                 i += 1
         return output
+
+
+
 
     def decompress(self, input):
         output = []

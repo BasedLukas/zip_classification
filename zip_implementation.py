@@ -14,11 +14,11 @@ class Zip:
         compressed, codes = self.huffman.encode(compressed)
         
         # Store the length of the Huffman string before padding
-        self.original_length = len(compressed)
+        original_length = len(compressed)
         if self.return_type == 'string':
-            return compressed, codes
+            return compressed, codes, original_length
         elif self.return_type == 'binary':
-            return self.to_binary(compressed), codes, self.original_length
+            return self.to_binary(compressed), codes, original_length
         
 
     def decompress(self, input):
@@ -43,35 +43,3 @@ class Zip:
         huffman_data = huffman_data[:self.original_length]
         return huffman_data
 
-
-data = """
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-We've known each other for so long
-Your heart's been aching, but you're too shy to say it (say it)
-
-"""
-
-z = Zip(return_type='binary')
-compressed = z.compress(data)
-
-del z # Show that nothing is being stored in the object
-z = Zip(return_type='binary')
-
-
-decompressed = z.decompress(compressed)
-
-print('Length of compressed data:',len(compressed[0])+ len(compressed[1]))  # This prints the length of the bytearray in bytes
-print("Length of initial string:",len(data))  
-if (decompressed == data):
-    print("Compression worked with zero loss")  
-
-print()
-print(f"Encoded string: \n{compressed[0]}")
-print()
-print(f"Huffman codes: \n{compressed[1]}")
