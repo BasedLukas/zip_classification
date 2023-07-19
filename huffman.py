@@ -12,8 +12,6 @@ class Node:
 class Huffman:
     def __init__(self, freq_dict=None):
         self.freq_dict = freq_dict or {}
-        self.huffman_tree = None
-        self.huffman_codes = None
 
     def build_frequency_dict(self, data):
         for c in data:
@@ -31,33 +29,38 @@ class Huffman:
             freq_sum = left.freq + right.freq
             internal_node = Node(None, freq_sum, left, right)
             nodes.append(internal_node)
-        self.huffman_tree = nodes[0]
+        return nodes[0]
 
     def generate_huffman_codes(self, node=None, code=''):
-        node = node or self.huffman_tree
+        if node is None:
+            return {}
         if node.is_leaf():
-            self.huffman_codes[node.char] = code
-        else:
-            self.generate_huffman_codes(node.left, code + '0')
-            self.generate_huffman_codes(node.right, code + '1')
+            return {node.char: code}
+        huffman_codes = {}
+        huffman_codes.update(self.generate_huffman_codes(node.left, code + '0'))
+        huffman_codes.update(self.generate_huffman_codes(node.right, code + '1'))
+        return huffman_codes
 
     def encode(self, data):
         self.build_frequency_dict(data)
-        self.build_huffman_tree()
-        self.huffman_codes = {}
-        self.generate_huffman_codes()
-        huffman_data = [self.huffman_codes[c] for c in data]
-        return ''.join(huffman_data)
+        huffman_tree = self.build_huffman_tree()
+        huffman_codes = self.generate_huffman_codes(huffman_tree)
+        huffman_data = [huffman_codes[c] for c in data]
+        encoded = ''.join(huffman_data)
+        return encoded, huffman_codes
 
-    def decode(self, huffman_data):
+    @staticmethod
+    def decode(encoded_data, huffman_codes):
         decoded = []
-        node = self.huffman_tree
-        for bit in huffman_data:
-            if bit == '0':
-                node = node.left
-            else:
-                node = node.right
-            if node.is_leaf():
-                decoded.append(node.char)
-                node = self.huffman_tree
+        huffman_data = ""
+        reverse_huffman_codes = {v: k for k, v in huffman_codes.items()}
+        for bit in encoded_data:
+            huffman_data += bit
+            if huffman_data in reverse_huffman_codes:
+                # Append the tuple to decoded
+                decoded.append(reverse_huffman_codes[huffman_data])
+                huffman_data = ""
         return decoded
+
+
+

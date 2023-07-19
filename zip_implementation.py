@@ -11,22 +11,23 @@ class Zip:
 
     def compress(self, data):
         compressed = self.lz.compress(data)
-        compressed= self.huffman.encode(compressed)
+        compressed, codes = self.huffman.encode(compressed)
         
         # Store the length of the Huffman string before padding
         self.original_length = len(compressed)
         if self.return_type == 'string':
-            return compressed
+            return compressed, codes
         elif self.return_type == 'binary':
-            return self.to_binary(compressed)
+            return self.to_binary(compressed), codes, self.original_length
         
 
-    def decompress(self, data):
-
+    def decompress(self, input):
+        data, codes, original_length = input
+        self.original_length = original_length
         if self.return_type == 'binary':
             data = self.from_binary(data)
-        
-        decompressed = self.huffman.decode(data)
+
+        decompressed = self.huffman.decode(data, codes)
         decompressed = self.lz.decompress(decompressed)
         return decompressed
 
@@ -57,13 +58,20 @@ Your heart's been aching, but you're too shy to say it (say it)
 """
 
 z = Zip(return_type='binary')
-
 compressed = z.compress(data)
+
+del z # Show that nothing is being stored in the object
+z = Zip(return_type='binary')
+
+
 decompressed = z.decompress(compressed)
 
-print(len(compressed))  # This prints the length of the bytearray in bytes
-print(len(data))  
-print(decompressed == data)  # This prints True
+print('Length of compressed data:',len(compressed[0])+ len(compressed[1]))  # This prints the length of the bytearray in bytes
+print("Length of initial string:",len(data))  
+if (decompressed == data):
+    print("Compression worked with zero loss")  
 
-
-print(z.decompress(compressed) == data)  # This prints True
+print()
+print(f"Encoded string: \n{compressed[0]}")
+print()
+print(f"Huffman codes: \n{compressed[1]}")
